@@ -1,65 +1,103 @@
-import Image from "next/image";
-
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950 text-white">
+      <section className="mx-auto flex min-h-screen max-w-6xl flex-col justify-center px-6 py-16">
+        <div className="mb-10 inline-flex w-fit rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm text-white/80 backdrop-blur">
+          Reuniões de Bioinformática • 2026
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
+
+        <h1 className="max-w-4xl text-4xl font-bold leading-tight sm:text-6xl">
+          Um espaço elegante para organizar temas, artigos e sugestões das
+          reuniões semanais.
+        </h1>
+
+        <p className="mt-6 max-w-2xl text-lg leading-8 text-white/75">
+          As reuniões acontecem toda segunda-feira às 14:00. Em breve, este site
+          mostrará o cronograma completo de 2026, as datas em aberto e o envio
+          de sugestões de temas com DOI e indicação de quem poderá guiar a
+          discussão.
+        </p>
+
+        <div className="mt-8 flex flex-wrap gap-4">
           <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="#cronograma"
+            className="rounded-2xl bg-emerald-400 px-6 py-3 font-semibold text-slate-950 transition hover:scale-[1.02]"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
+            Ver cronograma
           </a>
+
           <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="#sugestoes"
+            className="rounded-2xl border border-white/15 bg-white/5 px-6 py-3 font-semibold text-white transition hover:bg-white/10"
           >
-            Documentation
+            Ver sugestões
           </a>
         </div>
-      </main>
-    </div>
+
+        <div className="mt-16 grid gap-6 md:grid-cols-3">
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur">
+            <h2 className="text-xl font-semibold">Cronograma 2026</h2>
+            <p className="mt-3 text-sm leading-6 text-white/70">
+              Todas as segundas-feiras do ano organizadas de forma clara, com
+              sinalização das reuniões já definidas e das que ainda estão em
+              aberto.
+            </p>
+          </div>
+
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur">
+            <h2 className="text-xl font-semibold">Sugestão de temas</h2>
+            <p className="mt-3 text-sm leading-6 text-white/70">
+              Qualquer pessoa poderá sugerir um tema, informar se possui artigo
+              relacionado e inserir o DOI quando houver.
+            </p>
+          </div>
+
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur">
+            <h2 className="text-xl font-semibold">Painel de análise</h2>
+            <p className="mt-3 text-sm leading-6 text-white/70">
+              As propostas ficarão visíveis com nome, data, hora e status, para
+              futura aprovação ou recusa pela administração.
+            </p>
+          </div>
+        </div>
+
+        <section id="cronograma" className="mt-20">
+          <div className="rounded-3xl border border-white/10 bg-black/20 p-8">
+            <h2 className="text-2xl font-semibold">Prévia do cronograma</h2>
+            <p className="mt-3 text-white/70">
+              Esta é uma versão inicial do site. No próximo passo, vamos trocar
+              esta prévia por uma agenda real das reuniões.
+            </p>
+
+            <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="rounded-2xl border border-emerald-400/30 bg-emerald-400/10 p-5">
+                <p className="text-sm text-emerald-200">05 jan 2026 • 14:00</p>
+                <p className="mt-2 text-lg font-semibold">Em aberto</p>
+              </div>
+
+              <div className="rounded-2xl border border-emerald-400/30 bg-emerald-400/10 p-5">
+                <p className="text-sm text-emerald-200">12 jan 2026 • 14:00</p>
+                <p className="mt-2 text-lg font-semibold">Em aberto</p>
+              </div>
+
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+                <p className="text-sm text-white/60">19 jan 2026 • 14:00</p>
+                <p className="mt-2 text-lg font-semibold">Tema a definir</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="sugestoes" className="mt-10">
+          <div className="rounded-3xl border border-white/10 bg-black/20 p-8">
+            <h2 className="text-2xl font-semibold">Área de sugestões</h2>
+            <p className="mt-3 text-white/70">
+              Ainda vamos construir o formulário completo, mas a estrutura do
+              site já começou.
+            </p>
+          </div>
+        </section>
+      </section>
+    </main>
   );
 }
