@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { supabase } from '@/lib/supabase'
 
 export const dynamic = 'force-dynamic'
@@ -185,11 +186,11 @@ function MeetingCard({ meeting }: { meeting: Meeting }) {
   const suggestions = meeting.suggestions ?? []
 
   return (
-    <details className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur">
+    <details className="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur-md transition hover:border-white/15">
       <summary className="cursor-pointer list-none">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
-            <p className="text-sm text-white/60">
+            <p className="text-sm text-white/55">
               {formatDate(meeting.meeting_date)} • {formatTime(meeting.meeting_time)}
             </p>
             <h3 className="mt-1 text-lg font-semibold text-white">{title}</h3>
@@ -270,6 +271,31 @@ function MeetingCard({ meeting }: { meeting: Meeting }) {
   )
 }
 
+function YearButton({
+  label,
+  active = false,
+}: {
+  label: string
+  active?: boolean
+}) {
+  if (active) {
+    return (
+      <button className="rounded-2xl border border-cyan-400/30 bg-cyan-400/10 px-5 py-2.5 text-sm font-semibold text-cyan-100 shadow-[0_0_20px_rgba(34,211,238,0.12)]">
+        {label}
+      </button>
+    )
+  }
+
+  return (
+    <button
+      disabled
+      className="cursor-not-allowed rounded-2xl border border-white/10 bg-white/5 px-5 py-2.5 text-sm font-semibold text-white/35"
+    >
+      {label}
+    </button>
+  )
+}
+
 export default async function Home() {
   const { data, error } = await getMeetings()
 
@@ -285,35 +311,94 @@ export default async function Home() {
     .reverse()
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950 text-white">
-      <section className="mx-auto max-w-6xl px-6 py-16">
-        <div className="mb-6 inline-flex w-fit rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm text-white/80 backdrop-blur">
-          Reuniões Bioinfo • 2026
-        </div>
+    <main className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.14),transparent_28%),radial-gradient(circle_at_85%_10%,rgba(16,185,129,0.12),transparent_22%),linear-gradient(135deg,#020617_0%,#0f172a_45%,#052e2b_100%)] text-white">
+      <section className="mx-auto max-w-6xl px-6 py-14">
+        <header className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/5 px-6 py-10 backdrop-blur-xl">
+          <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.03),transparent_35%,rgba(34,211,238,0.03))]" />
 
-        <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
-          Cronograma das reuniões
-        </h1>
+          <div className="relative flex flex-col items-center justify-center gap-6 text-center">
+            <div className="flex flex-col items-center justify-center gap-5 md:flex-row md:gap-6">
+              <div className="relative flex h-52 w-52 items-center justify-center md:h-64 md:w-64">
+                <div className="absolute inset-0 rounded-full bg-cyan-400/10 blur-3xl animate-[pulse_6s_ease-in-out_infinite]" />
+                <div className="absolute inset-4 rounded-full bg-emerald-400/10 blur-[42px] animate-[pulse_8s_ease-in-out_infinite]" />
+                <div className="relative rounded-full border border-white/10 bg-white/5 p-5 shadow-[0_0_60px_rgba(34,211,238,0.18)]">
+                  <Image
+                    src="/logo-bioinfo.png"
+                    alt="Logo do grupo de pesquisa em Bioinformática e Biologia Computacional"
+                    width={220}
+                    height={220}
+                    className="h-auto w-auto opacity-90 drop-shadow-[0_0_24px_rgba(255,255,255,0.14)]"
+                    priority
+                  />
+                </div>
+              </div>
 
-        <p className="mt-4 max-w-3xl text-lg leading-8 text-white/75">
-          Segundas-feiras às 14:00. Clique em uma data para ver os detalhes.
-        </p>
+              <div className="relative max-w-3xl">
+                <div className="absolute inset-[-18px] rounded-[218px] rounded-[2rem] bg-cyan-400/6 blur-2xl" />
+                <div className="absolute inset-x-6 inset-y-1 rounded-[1.75rem] bg-emerald-400/5 blur-xl" />
 
-        <div className="mt-8 flex flex-wrap gap-4">
-          <a
-            href="#proximas"
-            className="rounded-2xl bg-emerald-400 px-6 py-3 font-semibold text-slate-950 transition hover:scale-[1.02]"
-          >
-            Ver próximas
-          </a>
+                <div className="relative rounded-[1.75rem] border border-white/8 bg-white/[0.04] px-6 py-4 backdrop-blur-[2px]">
+                  <p className="text-balance text-xl font-semibold tracking-wide text-white md:text-3xl">
+                    Grupo de Pesquisa Bioinformática e Biologia Computacional
+                  </p>
+                </div>
+              </div>
+            </div>
 
-          <a
-            href="#historico"
-            className="rounded-2xl border border-white/15 bg-white/5 px-6 py-3 font-semibold text-white transition hover:bg-white/10"
-          >
-            Ver histórico
-          </a>
-        </div>
+            <div className="w-full max-w-4xl">
+              <h1 className="text-3xl font-bold tracking-tight text-white sm:text-5xl">
+                Cronograma das reuniões
+              </h1>
+
+              <div className="mt-5 space-y-4">
+                <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-5 py-4 text-sm text-white/75 backdrop-blur-md sm:text-base">
+                  <p>
+                    <span className="font-semibold text-white">Encontros presenciais:</span>{' '}
+                    segundas-feiras às 14:00, na <span className="font-semibold text-cyan-100">Sala 3 do CPOM</span>{' '}
+                    <span className="text-white/55">(ao lado da nossa sala de Bioinformática)</span>.
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-cyan-400/15 bg-cyan-400/[0.05] px-5 py-4 text-left backdrop-blur-md">
+                  <p className="text-sm font-semibold uppercase tracking-[0.18em] text-cyan-100/85">
+                    Acesso online
+                  </p>
+
+                  <div className="mt-3 space-y-2 text-sm text-white/75 sm:text-base">
+                    <p>
+                      <span className="font-semibold text-white">Link:</span>{' '}
+                      <a
+                        href="https://us02web.zoom.us/j/86303251576"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="break-all text-cyan-200 underline decoration-cyan-400/40 underline-offset-4 transition hover:text-cyan-100"
+                      >
+                        us02web.zoom.us/j/86303251576
+                      </a>
+                    </p>
+
+                    <p>
+                      <span className="font-semibold text-white">ID da reunião:</span>{' '}
+                      863 0325 1576
+                    </p>
+
+                    <p className="text-white/60">
+                      Por segurança, a senha não é disponibilizada aqui. Ela está descrita na descrição do grupo de WhatsApp.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <YearButton label="2026" active />
+              <YearButton label="2027" />
+              <YearButton label="2028" />
+              <YearButton label="2029" />
+              <YearButton label="2030" />
+            </div>
+          </div>
+        </header>
 
         {error ? (
           <div className="mt-10 rounded-3xl border border-red-400/30 bg-red-400/10 p-6 text-red-100">
@@ -321,10 +406,10 @@ export default async function Home() {
           </div>
         ) : (
           <>
-            <section id="proximas" className="mt-16">
+            <section id="proximas" className="mt-14">
               <div className="mb-6 flex items-center justify-between gap-4">
                 <h2 className="text-2xl font-semibold">Próximas reuniões</h2>
-                <span className="text-sm text-white/50">
+                <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-sm text-white/50">
                   {upcomingMeetings.length} data(s)
                 </span>
               </div>
@@ -345,7 +430,7 @@ export default async function Home() {
             <section id="historico" className="mt-16">
               <div className="mb-6 flex items-center justify-between gap-4">
                 <h2 className="text-2xl font-semibold">Histórico</h2>
-                <span className="text-sm text-white/50">
+                <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-sm text-white/50">
                   {pastMeetings.length} reunião(ões)
                 </span>
               </div>
