@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import { supabase } from '@/lib/supabase'
+import BinaryRain from '@/app/components/BinaryRain'
 
 export const dynamic = 'force-dynamic'
 
@@ -272,6 +273,7 @@ function MeetingCard({ meeting }: { meeting: Meeting }) {
 }
 
 function YearButton({
+
   label,
   active = false,
 }: {
@@ -299,7 +301,17 @@ function YearButton({
 export default async function Home() {
   const { data, error } = await getMeetings()
 
-  const meetings = (data as Meeting[] | null) ?? []
+  const meetings = ((data as Meeting[] | null) ?? []).map((meeting) => {
+    if (meeting.meeting_date < new Date().toISOString().slice(0, 10) && meeting.status === 'em_aberto') {
+      return {
+        ...meeting,
+        status: 'cancelada' as Meeting['status'],
+      }
+    }
+
+    return meeting
+  })
+
   const today = new Date().toISOString().slice(0, 10)
 
   const upcomingMeetings = meetings.filter(
@@ -311,12 +323,19 @@ export default async function Home() {
     .reverse()
 
   return (
-    <main className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.14),transparent_28%),radial-gradient(circle_at_85%_10%,rgba(16,185,129,0.12),transparent_22%),linear-gradient(135deg,#020617_0%,#0f172a_45%,#052e2b_100%)] text-white">
-      <section className="mx-auto max-w-6xl px-6 py-14">
+    <main className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.14),transparent_28%),radial-gradient(circle_at_85%_10%,rgba(16,185,129,0.12),transparent_22%),linear-gradient(135deg,#020617_0%,#0f172a_45%,#052e2b_100%)] text-white">
+      <BinaryRain />
+      <section className="relative z-10 mx-auto max-w-6xl px-6 py-14">
         <header className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/5 px-6 py-10 backdrop-blur-xl">
           <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.03),transparent_35%,rgba(34,211,238,0.03))]" />
 
           <div className="relative flex flex-col items-center justify-center gap-6 text-center">
+            <a
+              href="/login"
+              className="absolute right-0 top-0 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-medium tracking-wide text-white/65 transition hover:border-white/20 hover:bg-white/10 hover:text-white"
+            >
+              Área administrativa
+            </a>
             <div className="flex flex-col items-center justify-center gap-5 md:flex-row md:gap-6">
               <div className="relative flex h-52 w-52 items-center justify-center md:h-64 md:w-64">
                 <div className="absolute inset-0 rounded-full bg-cyan-400/10 blur-3xl animate-[pulse_6s_ease-in-out_infinite]" />
@@ -339,7 +358,7 @@ export default async function Home() {
 
                 <div className="relative rounded-[1.75rem] border border-white/8 bg-white/[0.04] px-6 py-4 backdrop-blur-[2px]">
                   <p className="text-balance text-xl font-semibold tracking-wide text-white md:text-3xl">
-                    Grupo de Pesquisa Bioinformática e Biologia Computacional
+                    Grupo de Pesquisa em Bioinformática e Biologia Computacional
                   </p>
                 </div>
               </div>
@@ -429,7 +448,7 @@ export default async function Home() {
 
             <section id="historico" className="mt-16">
               <div className="mb-6 flex items-center justify-between gap-4">
-                <h2 className="text-2xl font-semibold">Histórico</h2>
+                <h2 className="text-2xl font-semibold">Histórico — reuniões passadas</h2>
                 <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-sm text-white/50">
                   {pastMeetings.length} reunião(ões)
                 </span>
