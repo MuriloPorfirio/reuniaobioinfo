@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import { supabase } from '@/lib/supabase'
 import BinaryRain from '@/app/components/BinaryRain'
+import SubscribeForm from '@/app/components/SubscribeForm'
 
 export const dynamic = 'force-dynamic'
 
@@ -416,6 +417,8 @@ export default async function Home() {
               <YearButton label="2029" />
               <YearButton label="2030" />
             </div>
+
+            <SubscribeForm />
           </div>
         </header>
 

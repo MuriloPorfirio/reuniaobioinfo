@@ -136,6 +136,7 @@ export default function AdminPage() {
   const [errorMessage, setErrorMessage] = useState('')
   const [selectedMeetingId, setSelectedMeetingId] = useState<number | null>(null)
   const [selectedSuggestionId, setSelectedSuggestionId] = useState<number | null>(null)
+  const [meetingSearch, setMeetingSearch] = useState('')
   const [meetingSaving, setMeetingSaving] = useState(false)
   const [meetingForm, setMeetingForm] = useState<MeetingFormState>({
     topic: '',
@@ -624,6 +625,30 @@ export default function AdminPage() {
       ? suggestions.filter((suggestion) => suggestion.meeting_id === selectedMeetingId)
       : []
 
+  const filteredMeetings = useMemo(() => {
+    const term = meetingSearch.trim().toLowerCase()
+
+    if (!term) {
+      return meetings
+    }
+
+    return meetings.filter((meeting) => {
+      const searchableText = [
+        meeting.meeting_date,
+        meeting.meeting_time,
+        meeting.topic ?? '',
+        meeting.status,
+        meeting.notes ?? '',
+        meeting.article_title ?? '',
+        meeting.article_doi ?? '',
+      ]
+        .join(' ')
+        .toLowerCase()
+
+      return searchableText.includes(term)
+    })
+  }, [meetings, meetingSearch])
+
   if (!sessionChecked) {
     return (
       <main className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950 text-white">
@@ -821,8 +846,20 @@ export default function AdminPage() {
           <div className="mb-6 flex items-center justify-between gap-4">
             <h2 className="text-2xl font-semibold">Editor de reuniões</h2>
             <span className="text-sm text-white/50">
-              {meetings.length} reunião(ões)
+              {filteredMeetings.length} de {meetings.length} reunião(ões)
             </span>
+          </div>
+
+          <div className="mb-6 rounded-3xl border border-white/10 bg-white/5 p-4 backdrop-blur">
+            <label className="mb-2 block text-sm font-medium text-white">
+              Buscar reunião
+            </label>
+            <input
+              value={meetingSearch}
+              onChange={(event) => setMeetingSearch(event.target.value)}
+              className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none placeholder:text-white/30"
+              placeholder="Busque por data, tema, status, DOI ou observação"
+            />
           </div>
 
           <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
@@ -831,12 +868,12 @@ export default function AdminPage() {
                 <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
                   Carregando...
                 </div>
-              ) : meetings.length === 0 ? (
+              ) : filteredMeetings.length === 0 ? (
                 <div className="rounded-3xl border border-white/10 bg-white/5 p-6 text-white/70">
-                  Nenhuma reunião encontrada.
+                  Nenhuma reunião encontrada para essa busca.
                 </div>
               ) : (
-                meetings.map((meeting) => (
+                filteredMeetings.map((meeting) => (
                   <div
                     key={meeting.id}
                     className="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur"
