@@ -341,6 +341,19 @@ export default function AdminPage() {
     router.refresh()
   }
 
+  async function sendMeetingNotification(meetingId: number) {
+    const response = await fetch(`/api/send-meeting-notification/${meetingId}`)
+    const data = await response.json().catch(() => null)
+
+    if (!response.ok) {
+      throw new Error(
+        data?.error || data?.details || 'Falha ao enviar o e-mail de notificação.'
+      )
+    }
+
+    return data
+  }
+
   async function approveSuggestion(suggestion: Suggestion) {
     setActionId(suggestion.id)
     setMessage('')
@@ -413,8 +426,25 @@ export default function AdminPage() {
       return
     }
 
+    let notificationError = ''
+
+    try {
+      await sendMeetingNotification(suggestion.meeting_id)
+    } catch (error) {
+      notificationError =
+        error instanceof Error
+          ? error.message
+          : 'Falha ao enviar o e-mail de notificação.'
+    }
+
     await loadData()
-    showSuccess('Sugestão aprovada com sucesso.')
+
+    if (notificationError) {
+      showError(`Sugestão aprovada, mas o e-mail não foi enviado: ${notificationError}`)
+    } else {
+      showSuccess('Sugestão aprovada e e-mail enviado com sucesso.')
+    }
+
     setActionId(null)
   }
 
@@ -445,6 +475,11 @@ export default function AdminPage() {
     if (selectedMeetingId === null) {
       return
     }
+
+    const shouldSendNotification =
+      selectedMeeting !== null &&
+      selectedMeeting.status !== meetingForm.status &&
+      (meetingForm.status === 'confirmada' || meetingForm.status === 'cancelada')
 
     setMeetingSaving(true)
     setMessage('')
@@ -480,8 +515,31 @@ export default function AdminPage() {
       return
     }
 
+    let notificationError = ''
+
+    if (shouldSendNotification) {
+      try {
+        await sendMeetingNotification(selectedMeetingId)
+      } catch (error) {
+        notificationError =
+          error instanceof Error
+            ? error.message
+            : 'Falha ao enviar o e-mail de notificação.'
+      }
+    }
+
     await loadData()
-    showSuccess('Reunião atualizada com sucesso.')
+
+    if (shouldSendNotification) {
+      if (notificationError) {
+        showError(`Reunião atualizada, mas o e-mail não foi enviado: ${notificationError}`)
+      } else {
+        showSuccess('Reunião atualizada e e-mail enviado com sucesso.')
+      }
+    } else {
+      showSuccess('Reunião atualizada com sucesso.')
+    }
+
     setMeetingSaving(false)
   }
 
@@ -538,9 +596,28 @@ export default function AdminPage() {
       return
     }
 
+    let notificationError = ''
+
+    try {
+      await sendMeetingNotification(selectedMeetingId)
+    } catch (error) {
+      notificationError =
+        error instanceof Error
+          ? error.message
+          : 'Falha ao enviar o e-mail de notificação.'
+    }
+
     await loadData()
     setSelectedSuggestionId(null)
-    showSuccess('Reunião salva e sugestão aprovada com sucesso.')
+
+    if (notificationError) {
+      showError(
+        `Reunião salva e sugestão aprovada, mas o e-mail não foi enviado: ${notificationError}`
+      )
+    } else {
+      showSuccess('Reunião salva, sugestão aprovada e e-mail enviado com sucesso.')
+    }
+
     setMeetingSaving(false)
   }
 
