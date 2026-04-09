@@ -180,7 +180,7 @@ export async function GET(
                 <strong>ID da reunião:</strong> 863 0325 1576
               </p>
               <p style="margin:0;font-size:15px;color:#ffffff;">
-                <strong>Senha do Zoom:</strong> 895033
+                Por segurança, a senha não é disponibilizada aqui. Ela está descrita na descrição do grupo de WhatsApp.
               </p>
             </div>
 
