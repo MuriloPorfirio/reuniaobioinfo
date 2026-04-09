@@ -726,6 +726,34 @@ export default function AdminPage() {
     })
   }, [meetings, meetingSearch])
 
+  const { upcomingMeetings, pastMeetings } = useMemo(() => {
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+
+    const upcoming: Meeting[] = []
+    const past: Meeting[] = []
+
+    for (const meeting of filteredMeetings) {
+      const meetingDate = new Date(`${meeting.meeting_date}T00:00:00`)
+
+      if (Number.isNaN(meetingDate.getTime())) {
+        upcoming.push(meeting)
+        continue
+      }
+
+      if (meetingDate < today) {
+        past.push(meeting)
+      } else {
+        upcoming.push(meeting)
+      }
+    }
+
+    return {
+      upcomingMeetings: upcoming,
+      pastMeetings: [...past].reverse(),
+    }
+  }, [filteredMeetings])
+
   if (!sessionChecked) {
     return (
       <main className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950 text-white">
@@ -950,63 +978,157 @@ export default function AdminPage() {
                   Nenhuma reunião encontrada para essa busca.
                 </div>
               ) : (
-                filteredMeetings.map((meeting) => (
-                  <div
-                    key={meeting.id}
-                    className="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur"
-                  >
-                    <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                      <div>
-                        <p className="text-sm text-white/50">
-                          {formatDate(meeting.meeting_date)} • {formatTime(meeting.meeting_time)}
-                        </p>
-                        <h3 className="mt-1 text-lg font-semibold text-white">
-                          {meeting.topic && meeting.topic.trim().length > 0
-                            ? meeting.topic
-                            : 'Sem tema definido'}
-                        </h3>
-                      </div>
-
-                      <span
-                        className={`w-fit rounded-full border px-3 py-1 text-sm ${meetingStatusClasses(meeting.status)}`}
-                      >
-                        {meetingStatusLabel(meeting.status)}
+                <div className="space-y-8">
+                  <div>
+                    <div className="mb-4 flex items-center justify-between gap-3">
+                      <h3 className="text-lg font-semibold text-white">Próximas reuniões</h3>
+                      <span className="text-sm text-white/50">
+                        {upcomingMeetings.length} reunião(ões)
                       </span>
                     </div>
 
-                    <div className="mt-4 space-y-2 text-sm text-white/75">
-                      <div>
-                        <span className="text-white/50">Observação:</span>{' '}
-                        {meeting.notes && meeting.notes.trim().length > 0
-                          ? meeting.notes
-                          : 'Nenhuma observação'}
+                    {upcomingMeetings.length === 0 ? (
+                      <div className="rounded-3xl border border-white/10 bg-white/5 p-6 text-white/70">
+                        Nenhuma próxima reunião encontrada para essa busca.
                       </div>
+                    ) : (
+                      <div className="space-y-4">
+                        {upcomingMeetings.map((meeting) => (
+                          <div
+                            key={meeting.id}
+                            className="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur"
+                          >
+                            <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                              <div>
+                                <p className="text-sm text-white/50">
+                                  {formatDate(meeting.meeting_date)} • {formatTime(meeting.meeting_time)}
+                                </p>
+                                <h3 className="mt-1 text-lg font-semibold text-white">
+                                  {meeting.topic && meeting.topic.trim().length > 0
+                                    ? meeting.topic
+                                    : 'Sem tema definido'}
+                                </h3>
+                              </div>
 
-                      <div>
-                        <span className="text-white/50">Artigo:</span>{' '}
-                        {meeting.article_title && meeting.article_title.trim().length > 0
-                          ? meeting.article_title
-                          : 'Nenhum título definido'}
+                              <span
+                                className={`w-fit rounded-full border px-3 py-1 text-sm ${meetingStatusClasses(meeting.status)}`}
+                              >
+                                {meetingStatusLabel(meeting.status)}
+                              </span>
+                            </div>
+
+                            <div className="mt-4 space-y-2 text-sm text-white/75">
+                              <div>
+                                <span className="text-white/50">Observação:</span>{' '}
+                                {meeting.notes && meeting.notes.trim().length > 0
+                                  ? meeting.notes
+                                  : 'Nenhuma observação'}
+                              </div>
+
+                              <div>
+                                <span className="text-white/50">Artigo:</span>{' '}
+                                {meeting.article_title && meeting.article_title.trim().length > 0
+                                  ? meeting.article_title
+                                  : 'Nenhum título definido'}
+                              </div>
+
+                              <div>
+                                <span className="text-white/50">DOI:</span>{' '}
+                                {meeting.article_doi && meeting.article_doi.trim().length > 0
+                                  ? meeting.article_doi
+                                  : 'Nenhum DOI definido'}
+                              </div>
+                            </div>
+
+                            <div className="mt-4">
+                              <button
+                                onClick={() => openMeetingEditor(meeting)}
+                                className="rounded-2xl border border-white/15 bg-white/5 px-4 py-2 font-medium text-white hover:bg-white/10"
+                              >
+                                Editar reunião
+                              </button>
+                            </div>
+                          </div>
+                        ))}
                       </div>
-
-                      <div>
-                        <span className="text-white/50">DOI:</span>{' '}
-                        {meeting.article_doi && meeting.article_doi.trim().length > 0
-                          ? meeting.article_doi
-                          : 'Nenhum DOI definido'}
-                      </div>
-                    </div>
-
-                    <div className="mt-4">
-                      <button
-                        onClick={() => openMeetingEditor(meeting)}
-                        className="rounded-2xl border border-white/15 bg-white/5 px-4 py-2 font-medium text-white hover:bg-white/10"
-                      >
-                        Editar reunião
-                      </button>
-                    </div>
+                    )}
                   </div>
-                ))
+
+                  <div>
+                    <div className="mb-4 flex items-center justify-between gap-3">
+                      <h3 className="text-lg font-semibold text-white/80">Reuniões passadas</h3>
+                      <span className="text-sm text-white/50">
+                        {pastMeetings.length} reunião(ões)
+                      </span>
+                    </div>
+
+                    {pastMeetings.length === 0 ? (
+                      <div className="rounded-3xl border border-white/10 bg-white/5 p-6 text-white/50">
+                        Nenhuma reunião passada encontrada para essa busca.
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        {pastMeetings.map((meeting) => (
+                          <div
+                            key={meeting.id}
+                            className="rounded-3xl border border-white/10 bg-white/5 p-5 opacity-80 backdrop-blur"
+                          >
+                            <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                              <div>
+                                <p className="text-sm text-white/50">
+                                  {formatDate(meeting.meeting_date)} • {formatTime(meeting.meeting_time)}
+                                </p>
+                                <h3 className="mt-1 text-lg font-semibold text-white">
+                                  {meeting.topic && meeting.topic.trim().length > 0
+                                    ? meeting.topic
+                                    : 'Sem tema definido'}
+                                </h3>
+                              </div>
+
+                              <span
+                                className={`w-fit rounded-full border px-3 py-1 text-sm ${meetingStatusClasses(meeting.status)}`}
+                              >
+                                {meetingStatusLabel(meeting.status)}
+                              </span>
+                            </div>
+
+                            <div className="mt-4 space-y-2 text-sm text-white/75">
+                              <div>
+                                <span className="text-white/50">Observação:</span>{' '}
+                                {meeting.notes && meeting.notes.trim().length > 0
+                                  ? meeting.notes
+                                  : 'Nenhuma observação'}
+                              </div>
+
+                              <div>
+                                <span className="text-white/50">Artigo:</span>{' '}
+                                {meeting.article_title && meeting.article_title.trim().length > 0
+                                  ? meeting.article_title
+                                  : 'Nenhum título definido'}
+                              </div>
+
+                              <div>
+                                <span className="text-white/50">DOI:</span>{' '}
+                                {meeting.article_doi && meeting.article_doi.trim().length > 0
+                                  ? meeting.article_doi
+                                  : 'Nenhum DOI definido'}
+                              </div>
+                            </div>
+
+                            <div className="mt-4">
+                              <button
+                                onClick={() => openMeetingEditor(meeting)}
+                                className="rounded-2xl border border-white/15 bg-white/5 px-4 py-2 font-medium text-white hover:bg-white/10"
+                              >
+                                Editar reunião
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
               )}
             </div>
 
