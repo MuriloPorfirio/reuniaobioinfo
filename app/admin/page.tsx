@@ -469,6 +469,54 @@ export default function AdminPage() {
     setActionId(null)
   }
 
+  async function deleteSuggestion(suggestionId: number) {
+    if (!selectedMeeting) {
+      return
+    }
+
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+
+    const meetingDate = new Date(`${selectedMeeting.meeting_date}T00:00:00`)
+    const isPastMeeting =
+      !Number.isNaN(meetingDate.getTime()) && meetingDate < today
+    const canDeleteSuggestion =
+      selectedMeeting.status === 'cancelada' || isPastMeeting
+
+    if (!canDeleteSuggestion) {
+      showError('Só é possível apagar sugestões de reuniões passadas ou canceladas.')
+      return
+    }
+
+    const confirmed = window.confirm(
+      'Tem certeza que deseja apagar esta sugestão? Essa ação não poderá ser desfeita.'
+    )
+
+    if (!confirmed) {
+      return
+    }
+
+    setActionId(suggestionId)
+    setMessage('')
+    setErrorMessage('')
+
+    const { error } = await supabase.from('suggestions').delete().eq('id', suggestionId)
+
+    if (error) {
+      showError(error.message)
+      setActionId(null)
+      return
+    }
+
+    if (selectedSuggestionId === suggestionId) {
+      setSelectedSuggestionId(null)
+    }
+
+    await loadData()
+    showSuccess('Sugestão apagada com sucesso.')
+    setActionId(null)
+  }
+
   async function saveMeetingEdits(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
@@ -1256,6 +1304,31 @@ export default function AdminPage() {
                                       : 'Tornar esta a sugestão aceita'}
                                   </button>
                                 )}
+
+                                {selectedMeeting &&
+                                  (() => {
+                                    const today = new Date()
+                                    today.setHours(0, 0, 0, 0)
+
+                                    const meetingDate = new Date(`${selectedMeeting.meeting_date}T00:00:00`)
+                                    const isPastMeeting =
+                                      !Number.isNaN(meetingDate.getTime()) && meetingDate < today
+                                    const canDeleteSuggestion =
+                                      selectedMeeting.status === 'cancelada' || isPastMeeting
+
+                                    return canDeleteSuggestion ? (
+                                      <button
+                                        type="button"
+                                        onClick={() => deleteSuggestion(suggestion.id)}
+                                        disabled={actionId === suggestion.id}
+                                        className="rounded-2xl border border-rose-400/30 bg-rose-400/10 px-4 py-2 text-sm font-semibold text-rose-100 transition hover:bg-rose-400/20 disabled:cursor-not-allowed disabled:opacity-60"
+                                      >
+                                        {actionId === suggestion.id
+                                          ? 'Apagando...'
+                                          : 'Apagar sugestão'}
+                                      </button>
+                                    ) : null
+                                  })()}
                               </div>
                             </div>
                           ))}
